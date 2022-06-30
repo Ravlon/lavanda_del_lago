@@ -4,7 +4,7 @@
 :: CONTROLLA WINDOWS 10 o 11
 
 ::Setting variables
-set ping_error=NESSUNA CONNESSIONE INTERNET TROVATA ||||||| CONTROLLA CONNESSIONE INTERNET
+set ping_error=NESSUNA CONNESSIONE INTERNET TROVATA ******* CONTROLLA CONNESSIONE INTERNET
 set internet=[***] Controllo connessione ad Internet...
 set git_check=[***] Check 1: Presenza Programma Git
 set git_installed=[***]          Git Presente

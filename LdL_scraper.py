@@ -12,12 +12,13 @@ def white_strip(sentence:str)->str:
             returned_sentence += char
     return returned_sentence
 
-def setURL(*url_query):
+def setURL(*query_inputs):
     """create URL address with query for specific categories or products
     Special attention is paid to ensure that the '/it/store' string isn't duplicated"""
+    url_query=list(query_inputs)
     for i in range(len(url_query)):
         if "/it/store/" in url_query[i]:
-            url_query[i].replace("/it/store","")
+            url_query[i]=url_query[i].replace("/it/store/","")
     return URL + ''.join(url_query)
 
 def elementi(soup_array):
@@ -62,7 +63,7 @@ def category_scraper(Linee_array):
                 products = []
                 prod_info = soup.find_all("h3",class_="uk-text-center")
                 prod_price = soup.find_all("a",class_="uk-button")
-                prod_price = prod_price[:-4]
+                prod_price = prod_price[:len(prod_info)]
                 if len(prod_info)==len(prod_price):
                     for i in range(len(prod_info)):
                         products.append(product_fields( name=prod_info[i].a.get("title"),
@@ -70,9 +71,9 @@ def category_scraper(Linee_array):
                                                         url_query=prod_info[i].a.get("href"),
                                                         price=white_strip(prod_price[i])))
                 else:(
-                    print("""================================
-                                Errore
-                    ================================"""))
+                    print(len(prod_info),"-",len(prod_price))
+                    #print("="*30,"\n"," "*12,"Errore"," "*12,"\n","="*30))
+                )
                 if not(products): break
                 catalogo.extend(products)
             page+=1
@@ -85,19 +86,26 @@ def product_scraper(catalogo):
             b.  product size
     Product Size is at the moment limited to the products that have a specialised class for it, called spot. Other classes are at the moment ignored."""
     catalogo_size = len(catalogo)
-    for item in catalogo:
-        print("Reperimento info del prodotto n°",item+1,"di ",catalogo_size, end='\r')
+    for (i,item) in enumerate(catalogo):
+        print("Reperimento info del prodotto n°",i+1,"di ",catalogo_size, end='\r')
         product_query = setURL(item['url_query'])
         
         page = requests.get(product_query)
         soup = bs(page.content,"lxml")
-
-        item['code'] = white_strip(soup.find(class_="code").get_text()).replace("Cod.","")
         
-        item['formato'] = white_strip(soup.find(class_= "spot").get_text()).replace("Quantità: ","") #pane-body ws-content
-        if item['formato'] is None:
+        try:
+            item['code'] = white_strip(soup.find(class_="code").get_text()).replace("Cod.","")
+        except Exception:
+            try:
+                item['code'] = white_strip(soup.find(class_="h4").get_text()).replace("Cod.","")
+            except Exception:
+                item['code'] = 'n/a'
+                print("ERRORE PRODOTTO SENZA CODICE: ", item['name'], "  \tquery: ", product_query)
+        try: 
+            item['formato'] = white_strip(soup.find(class_="spot").get_text()).replace("Quantità:","") #pane-bodu ws-content
+        except Exception:
             item['formato'] = 'n/a'
-
+        
     return catalogo
         
 def main():
@@ -119,9 +127,9 @@ def main():
     #         Current Position           #
     ######################################
 
-    for item in prodotti:
-        print(item)
-    input()
+    # for item in prodotti:
+    #     print(item)
+    # input()
 
     #fields = ['Url Prodotto','Nome Prodotto','Linea Prodotto','Prezzo Prodotto','Codice Prodotto','Formato prodotto']  
 

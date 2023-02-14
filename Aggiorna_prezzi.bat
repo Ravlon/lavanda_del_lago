@@ -1,7 +1,7 @@
 @echo off
 
 :: CONTROLLA SE ACCESSO DA AMMINISTRATORE!!!
-:: CONTROLLA WINDOWS 10 o 11
+:: Controlla Python
 
 ::Setting variables
 set ping_error=NESSUNA CONNESSIONE INTERNET TROVATA ******* CONTROLLA CONNESSIONE INTERNET
@@ -23,14 +23,9 @@ set month=%day:~-2%
 set day=%day:~0,2%
 set str_date=%year%.%month%.%day%
 
-
-
-:: Backup files every two weeks in .\BACKUP\Date_of_backup -format yy.mm.dd
+:: Check for Backup directory, else create it
 if exist .\Backup (cd .) else (md .\Backup)
-md .\Backup\%str_date%
-copy *.csv .\Backup\%str_date%
-copy *.xls .\Backup\%str_date%
-copy *.xlxs .\Backup\%str_date%
+
 
 :: Check Internet Connection
 echo %internet%
@@ -53,7 +48,7 @@ if exist .\.git (echo %git_initialised%) else (git init)
 
 :: Git pull any update of Python Script -> Run Python Script
 git pull https://github.com/Ravlon/lavanda_del_lago
-python3 LdL_scraper.py
+python3 Lavanda_del_Lago.py
 ::move /Y *.csv ..
 goto :aborted
 

@@ -105,5 +105,3 @@ def product_scraper(catalogo):
             item['formato'] = 'n/a'
         
     return catalogo
-
-def 
